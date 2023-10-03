@@ -1,10 +1,14 @@
-function TodoList({ todos, handleDeleteTodo, handleEditTodo, handleDoneTodo }) {
+import useTodos from "../hooks/useTodos";
+
+function TodoList({ todos, handleEditTodo }) {
+	const { deleteTodo } = useTodos();
+	const { doneTodo } = useTodos();
 	return (
-		<ul className="divide-y divide-[#e2d1c1]">
+		<ul className="divide-y divide-[#e2d1c1] mx-3 my-5">
 			{todos.map((todo) => {
 				return (
 					<li
-						className="flex justify-between gap-x-6 py-3 pl-2 min-w-[520px] m-2 rounded-md bg-[#f5f3f0]"
+						className="flex justify-between gap-x-6 py-2 w-full my-2 rounded-md bg-[#f5f3f0]"
 						key={todo.id}
 					>
 						{todo.status ? (
@@ -14,8 +18,8 @@ function TodoList({ todos, handleDeleteTodo, handleEditTodo, handleDoneTodo }) {
 						)}
 						<br />
 						<span className="text-left">{todo.description}</span>
-						<div className="my-1 py-2">
-							<button onClick={() => handleDeleteTodo(todo.id)}>
+						<div className="my-1">
+							<button onClick={() => deleteTodo(todo.id)}>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									x="0px"
@@ -104,7 +108,7 @@ function TodoList({ todos, handleDeleteTodo, handleEditTodo, handleDoneTodo }) {
 							</button>
 							<button
 								className="mr-2"
-								onClick={() => handleDoneTodo(todo.id)}
+								onClick={() => doneTodo(todo.id)}
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

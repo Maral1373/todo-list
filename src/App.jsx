@@ -1,33 +1,14 @@
 import { useState } from "react";
 import TodoList from "./components/TodoList";
 import CreateTodo from "./components/CreateTodo";
+import useTodos from "./hooks/useTodos";
 import "./App.css";
 
-function getRandomId() {
-	return Math.floor(Math.random() * 10000);
-}
-
 function App() {
-	const [todos, setTodos] = useState([]);
+	const { todos, editTodo, addTodo, getTodos } = useTodos();
 	const [todoIdToEdit, setTodoIdToEdit] = useState();
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
-	const [searchQuery, setSearchQuery] = useState();
-
-	const addTodo = (todo, description) => {
-		setTodos([
-			...todos,
-			{
-				id: getRandomId(),
-				text: todo,
-				status: false,
-				description,
-			},
-		]);
-		setTitle("");
-		setDescription("");
-	};
-	console.log(todos);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -35,32 +16,11 @@ function App() {
 		const todoName = formDate.get("newTodoName");
 		const todoDesc = formDate.get("description");
 		if (todoIdToEdit) {
-			editTodo(todoName, todoDesc);
+			editTodo(todoIdToEdit, todoName, todoDesc);
+			setTodoIdToEdit();
 		} else {
 			addTodo(todoName, todoDesc);
 		}
-	};
-
-	const handleDeleteTodo = (id) => {
-		const deletedTodo = todos.filter((todo) => {
-			return todo.id !== id;
-		});
-		setTodos(deletedTodo);
-	};
-
-	const editTodo = (newText, newDesc) => {
-		const editedTodo = todos.map((todo) => {
-			if (todo.id === todoIdToEdit) {
-				return {
-					...todo,
-					text: newText,
-					description: newDesc,
-				};
-			}
-			return todo;
-		});
-		setTodos(editedTodo);
-		setTodoIdToEdit();
 		setTitle("");
 		setDescription("");
 	};
@@ -74,22 +34,6 @@ function App() {
 		setDescription(oldTodo.description);
 	};
 
-	const handleDoneTodo = (id) => {
-		const todoToBeUpdated = todos.map((todo) => {
-			if (todo.id === id) {
-				return { ...todo, status: !todo.status };
-			}
-			return todo;
-		});
-		console.log("todoToBeUpdated", todoToBeUpdated);
-		setTodos(todoToBeUpdated);
-	};
-
-	const handleSearch = (q) => {
-		setSearchQuery(q);
-	};
-	console.log(searchQuery);
-
 	return (
 		<div className="App">
 			<CreateTodo
@@ -99,23 +43,9 @@ function App() {
 				todoIdToEdit={todoIdToEdit}
 				description={description}
 				setDescription={setDescription}
-				onChange={handleSearch}
 			/>
 
-			<TodoList
-				todos={
-					searchQuery
-						? todos.filter((todo) => {
-								return todo.text
-									.toLowerCase()
-									.includes(searchQuery.toLowerCase());
-						  })
-						: todos
-				}
-				handleDeleteTodo={handleDeleteTodo}
-				handleEditTodo={handleEditTodo}
-				handleDoneTodo={handleDoneTodo}
-			/>
+			<TodoList todos={getTodos()} handleEditTodo={handleEditTodo} />
 		</div>
 	);
 }
